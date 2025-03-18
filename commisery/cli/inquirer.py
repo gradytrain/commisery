@@ -19,7 +19,7 @@
 from dataclasses import asdict, dataclass, field
 from typing import Optional, Sequence
 
-import inquirer2.prompt
+import inquirer.prompt
 
 
 @dataclass
@@ -63,4 +63,4 @@ class Confirm:
 
 def prompt(questions) -> dict:
     """Prompt questions on the CLI"""
-    return inquirer2.prompt.prompt([asdict(question) for question in questions])
+    return inquirer.prompt.prompt([asdict(question) for question in questions])
