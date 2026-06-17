@@ -19,5 +19,48 @@ on:
   pull_request:
 
 jobs:
-  ruff:
-    
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check workflow files
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color
+
+  trivy-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: scan with trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+  ruff_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          version: "latest"
+
+      - name: install python
+        run: uv python install
+
+      - name: install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: check formatting
+        run: uvx ruff format --check
+
+      - name: run ruff
+        run: uvx ruff check --output-format=github .
