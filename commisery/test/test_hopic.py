@@ -33,9 +33,7 @@ except ImportError:
 
 
 try:
-    _hopic_version = tuple(
-        (int(x) if re.match("^[0-9]+$", x) else x) for x in metadata.version("hopic").split(".")
-    )
+    _hopic_version = tuple((int(x) if re.match("^[0-9]+$", x) else x) for x in metadata.version("hopic").split("."))
 
     _eps = metadata.entry_points().select(group="console_scripts")
     hopic_cli = [ep for ep in _eps if ep.name == "hopic"][0].load()
@@ -61,9 +59,7 @@ def run_with_config(config, *args, files={}, env=None, cfg_file="hopic-ci-config
                 with open(fname, "w") as f:
                     f.write(content)
             repo.index.add((cfg_file,) + tuple(files.keys()))
-            repo.index.commit(
-                message="Initial commit", author_date=_git_time, commit_date=_git_time
-            )
+            repo.index.commit(message="Initial commit", author_date=_git_time, commit_date=_git_time)
 
         for arg in args:
             if cfg_file != "hopic-ci-config.yaml":
@@ -221,10 +217,7 @@ def test_parse_commit_message(message, policy, strict):
     ),
 )
 def test_has_breaking_change(message, breaking):
-    assert (
-        parse_commit_message(message, policy="conventional-commits").has_breaking_change()
-        == breaking
-    )
+    assert parse_commit_message(message, policy="conventional-commits").has_breaking_change() == breaking
 
 
 @pytest.mark.parametrize(

@@ -47,7 +47,7 @@ log.addHandler(logging.NullHandler())
     "-t",
     help="Comma-separated list of accepted conventional commit tags to allow "
     + 'aside from the default "feat" and "fix".\n'
-    + f'If omitted, uses the following list:\n{", ".join(DEFAULT_ACCEPTED_TAGS)}',
+    + f"If omitted, uses the following list:\n{', '.join(DEFAULT_ACCEPTED_TAGS)}",
 )
 @click.option(
     "--max-subject-length",
@@ -59,8 +59,7 @@ log.addHandler(logging.NullHandler())
     "--disable",
     "-d",
     multiple=True,
-    help="List of commit message rules to disable.\n"
-    + f"Can be one of:\n{', '.join(get_default_rules().keys())}",
+    help="List of commit message rules to disable.\n" + f"Can be one of:\n{', '.join(get_default_rules().keys())}",
 )
 @click_log.simple_verbosity_option(__package__.split(".", maxsplit=1)[0])
 @click.pass_context
@@ -145,9 +144,7 @@ def commit(ctx, type, scope, description, breaking_change):
             questions.append(inquirer.Input(name="scope", message="Specify the scope (Optional)"))
 
         if not description:
-            questions.append(
-                inquirer.Input(name="description", message="Specify the subject of the commit")
-            )
+            questions.append(inquirer.Input(name="description", message="Specify the subject of the commit"))
 
         questions.append(
             inquirer.Editor(
@@ -233,11 +230,7 @@ def check(ctx, target):
         if (
             not re.match(r"^[0-9a-fA-F]{40}$", target_str)
             and not os.path.exists(target_str)
-            and len(
-                subprocess.check_output(("git", "rev-parse") + target, stderr=subprocess.DEVNULL)
-                .decode(encoding="UTF-8")
-                .splitlines()
-            )
+            and len(subprocess.check_output(("git", "rev-parse") + target, stderr=subprocess.DEVNULL).decode(encoding="UTF-8").splitlines())
             > 1
         ):
             log.debug(f"Handling as range: %s", target_str)
@@ -355,6 +348,7 @@ def next_version(ctx, target):
     config.silent = True
 
     log.debug("Yielding " + str(commits))
+
     def _check_commits(commits):
         for commit in commits:
             msg = parse_commit_message(commit if isinstance(commit, str) else commit.message)

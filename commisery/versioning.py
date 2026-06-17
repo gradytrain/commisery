@@ -47,11 +47,11 @@ else:
     )
 
 __all__ = (
-    'GitVersion',
-    'SemVer',
+    "GitVersion",
+    "SemVer",
     "Version",
-    'read_version',
-    'replace_version',
+    "read_version",
+    "replace_version",
 )
 
 Stringable = Any
@@ -64,7 +64,7 @@ class VersioningError(RuntimeError): ...
 
 class _IdentifierList(tuple):
     def __str__(self) -> str:
-        return '.'.join(self)
+        return ".".join(self)
 
 
 class Version(Protocol):
@@ -115,27 +115,28 @@ class SemVer(Version):
         * C always sorts before D; and
         * that this relationship is transitive
     """
-    __slots__ = ('major', 'minor', 'patch', 'prerelease', 'build')
+
+    __slots__ = ("major", "minor", "patch", "prerelease", "build")
     default_tag_name = "{version.major}.{version.minor}.{version.patch}{version.prerelease_separator}{version.prerelease}"
 
     def __init__(self, major: int, minor: int, patch: int, prerelease: Tuple[str, ...], build: Tuple[str, ...]):
-        self.major      = major
-        self.minor      = minor
-        self.patch      = patch
+        self.major = major
+        self.minor = minor
+        self.patch = patch
         self.prerelease = prerelease
-        self.build      = build
+        self.build = build
 
     def __setattr__(self, name, value):
-        if name in {'major', 'minor', 'patch'}:
+        if name in {"major", "minor", "patch"}:
             return super().__setattr__(name, int(value))
-        elif name in {'prerelease', 'build'}:
+        elif name in {"prerelease", "build"}:
             return super().__setattr__(name, _IdentifierList(value))
 
     def __iter__(self) -> Iterator[TBD]:
         return iter(getattr(self, attr) for attr in self.__class__.__slots__)
 
     def __repr__(self) -> str:
-        return '%s(major=%r, minor=%r, patch=%r, prerelease=%r, build=%r)' % ((self.__class__.__name__,) + tuple(self))
+        return "%s(major=%r, minor=%r, patch=%r, prerelease=%r, build=%r)" % ((self.__class__.__name__,) + tuple(self))
 
     @property
     def prerelease_separator(self) -> str:
@@ -146,19 +147,19 @@ class SemVer(Version):
         return "+" if self.build else ""
 
     def __str__(self) -> str:
-        ver = '.'.join(str(x) for x in tuple(self)[:3])
+        ver = ".".join(str(x) for x in tuple(self)[:3])
         ver += f"{self.prerelease_separator}{self.prerelease}"
         ver += f"{self.build_separator}{self.build}"
         return ver
 
     version_re = re.compile(
-        r'^(?:version=)?'
-      + r'(?P<major>0|[1-9][0-9]*)'                                  # noqa: E131
-      + r'\.(?P<minor>0|[1-9][0-9]*)'
-      + r'\.(?P<patch>0|[1-9][0-9]*)'
-      + r'(?:-(?P<prerelease>[-0-9a-zA-Z]+(?:\.[-0-9a-zA-Z]+)*))?'
-      + r'(?:\+(?P<build>[-0-9a-zA-Z]+(?:\.[-0-9a-zA-Z]+)*))?'
-      + r'\s*$'
+        r"^(?:version=)?"
+        + r"(?P<major>0|[1-9][0-9]*)"  # noqa: E131
+        + r"\.(?P<minor>0|[1-9][0-9]*)"
+        + r"\.(?P<patch>0|[1-9][0-9]*)"
+        + r"(?:-(?P<prerelease>[-0-9a-zA-Z]+(?:\.[-0-9a-zA-Z]+)*))?"
+        + r"(?:\+(?P<build>[-0-9a-zA-Z]+(?:\.[-0-9a-zA-Z]+)*))?"
+        + r"\s*$"
     )
 
     @classmethod
@@ -202,14 +203,15 @@ class SemVer(Version):
 
         return SemVer(self.major, self.minor, self.patch + 1, (), ())
 
-    _number_re = re.compile(r'^(?:[1-9][0-9]*|0)$')
+    _number_re = re.compile(r"^(?:[1-9][0-9]*|0)$")
+
     def next_prerelease(self, seed: Union[None, str, Iterable[Stringable]] = None) -> "SemVer":  # noqa: E301 'expected 1 blank line'
         # Special case for if we don't have a prerelease: bump patch and seed prerelease
         if not self.prerelease:
             if isinstance(seed, str):
                 seed = (seed,)
             elif not seed:
-                seed = ('1',)
+                seed = ("1",)
             seed = tuple(str(i) for i in seed)
 
             return SemVer(self.major, self.minor, self.patch + 1, seed, ())
@@ -221,25 +223,25 @@ class SemVer(Version):
                 increment_idx = idx
                 break
         if increment_idx is None:
-            return SemVer(self.major, self.minor, self.patch, self.prerelease + ('1',), ())
+            return SemVer(self.major, self.minor, self.patch, self.prerelease + ("1",), ())
 
         # Increment only the specified identifier
         prerelease = (
             self.prerelease[:increment_idx]
-          + (str(int(self.prerelease[increment_idx]) + 1),)  # noqa: E131
-          + self.prerelease[increment_idx + 1:]
+            + (str(int(self.prerelease[increment_idx]) + 1),)  # noqa: E131
+            + self.prerelease[increment_idx + 1 :]
         )
         return SemVer(self.major, self.minor, self.patch, prerelease, ())
 
     def next_version(self, bump="prerelease", **kwargs: TBD) -> "SemVer":
-        if bump == 'prerelease' and 'prerelease_seed' in kwargs:
+        if bump == "prerelease" and "prerelease_seed" in kwargs:
             kwargs = kwargs.copy()
-            kwargs['seed'] = kwargs.pop('prerelease_seed')
+            kwargs["seed"] = kwargs.pop("prerelease_seed")
         return {  # type: ignore[operator]
-            'prerelease': self.next_prerelease,
-            'patch'     : self.next_patch,
-            'minor'     : self.next_minor,
-            'major'     : self.next_major,
+            "prerelease": self.next_prerelease,
+            "patch": self.next_patch,
+            "minor": self.next_minor,
+            "major": self.next_major,
         }[bump](**kwargs)
 
     def next_version_for_commits(self, commits: Iterable[TBD]) -> "SemVer":
@@ -329,7 +331,7 @@ class SemVer(Version):
 
 
 _fmts: Mapping[str, Type[Version]] = {
-    'semver': SemVer,
+    "semver": SemVer,
 }
 
 
@@ -346,7 +348,7 @@ def add_version_type(name: str, version_type: Type[Version]):
 def read_version(fname, format="semver", encoding: Optional[str] = None) -> Optional[Version]:
     fmt = _fmts[format]
 
-    with open(fname, 'r', encoding=encoding) as f:
+    with open(fname, "r", encoding=encoding) as f:
         for line in f:
             version = fmt.parse(line)
             if version is not None:
@@ -363,10 +365,10 @@ _semver_tag_cleanup: Final = re.compile(r"^[^0-9]+")
 
 
 class GitVersion(NamedTuple):
-    tag_name     : str
-    dirty        : bool = False
-    commit_count : Optional[int] = None
-    commit_hash  : Optional[str] = None
+    tag_name: str
+    dirty: bool = False
+    commit_count: Optional[int] = None
+    commit_hash: Optional[str] = None
 
     @property
     def exact(self) -> bool:
@@ -374,16 +376,16 @@ class GitVersion(NamedTuple):
 
     @classmethod
     def from_description(cls, description: str) -> "GitVersion":
-        dirty = description.endswith('-dirty')
+        dirty = description.endswith("-dirty")
         if dirty:
-            description = description[:-len('-dirty')]
+            description = description[: -len("-dirty")]
 
         abbrev_commit_hash = None
         commit_match = _git_describe_commit_re.match(description)
         if commit_match:
             description, abbrev_commit_hash = commit_match.groups()
             if description is None:
-                description = ''
+                description = ""
 
         commit_count = None
         count_match = _git_describe_distance_re.match(description)
@@ -445,12 +447,12 @@ def replace_version(fname: PurePath, new_version: Version, encoding: Optional[st
         out = temp = open(fname.with_suffix(fname.suffix + ".tmp"), "w", encoding=encoding)
 
     try:
-        with open(fname, 'r', encoding=encoding) as f:
+        with open(fname, "r", encoding=encoding) as f:
             for line in f:
                 # Replace version in source line
                 m = new_version.version_re.match(line)
                 if m:
-                    line = line[:m.start(1)] + str(new_version) + line[m.end(m.lastindex or 0):]
+                    line = line[: m.start(1)] + str(new_version) + line[m.end(m.lastindex or 0) :]
                 out.write(line)
     except:  # noqa: E722: we re-raise, so it's not a problem
         if temp is not None:

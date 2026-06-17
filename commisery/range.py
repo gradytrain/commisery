@@ -70,9 +70,7 @@ def check_commit_rev_range(revision_range, config: Configuration):
 
             log.debug(
                 "Done checking commits{}".format(
-                    f', {error_count} error{"s" if error_count > 1 else ""} found'
-                    if error_count
-                    else "",
+                    f", {error_count} error{'s' if error_count > 1 else ''} found" if error_count else "",
                 )
             )
 

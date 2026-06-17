@@ -23,8 +23,7 @@ BREAKING_CHANGE_TOKEN = "BREAKING CHANGE"
 _Footer = namedtuple("_Footer", ("token", "value"))
 
 
-class ParsingError(RuntimeError):
-    ...
+class ParsingError(RuntimeError): ...
 
 
 class CommitMessage(object):
