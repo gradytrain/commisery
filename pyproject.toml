@@ -1,3 +1,73 @@
-[tool.black]
-include = "commisery"
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "commisery"
+dynamic = ["version"] # Pulls from git tags like use_scm_version did
+description = "Check whether given commit messages adhere to Conventional Commits."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "TomTom N.V." },
+    { name = "Josh Grady" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+# 1. Core Runtime Dependencies (Ported completely from install_requires)
+dependencies = [
+    "click>=7.1.2,<9",
+    "click-log",
+    "GitPython>=3,<4",
+    "regex",
+    "PyYAML",
+    "stemming>=1,<2",
+    "llvm-diagnostics>=3.0.0,<4",
+    "inquirer",
+    # Note: 'dataclasses' was removed because python_requires >= 3.8 includes it natively.
+]
+
+# 2. Standard CLI Scripts (Ported from console_scripts)
+[project.scripts]
+cm = "commisery.cli:main"
+commisery = "commisery.cli:main"
+commisery-verify-msg = "commisery.cli:check"
+commisery-verify-github-pullrequest = "commisery.github:main"
+
+# 3. Custom Plugin Entry Points (Ported from hopic.plugins.yaml)
+[project.entry-points."hopic.plugins.yaml"]
+commisery = "commisery.hopic_template:commisery"
+
+# 4. Optional Extras (Ported from extras_require)
+[project.optional-dependencies]
+github = [
+    "PyGithub>=1.53,<2",
+]
+
+# 5. Development Dependencies for uv Setup (Ported from tests_require)
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+    "ruff",
+]
+
+# 6. Build and Tool Configurations
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["commisery"]
+
+[tool.ruff]
+src = ["commisery"]
 line-length = 140
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.ruff.format]
+quote-style = "double"
