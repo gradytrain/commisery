@@ -42,7 +42,7 @@ def commisery_cli():
         verbose=True,
         command="check",
     ):
-        runner = CliRunner(mix_stderr=False)
+        runner = CliRunner()
         with runner.isolated_filesystem():
             with git.Repo.init() as repo:
                 if isinstance(commit_messages, types.GeneratorType):

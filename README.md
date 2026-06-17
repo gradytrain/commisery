@@ -1,3 +1,7 @@
+# EDIT: 6/17/2026
+
+I am in the middle of updating this and also refactoring this to a more agile/modern runtime package
+
 # Commisery
 
 Commisery is a package to help check whether given commit messages adhere to [Conventional Commits].
